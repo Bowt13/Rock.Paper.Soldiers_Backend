@@ -1,4 +1,7 @@
-import {Authorized, BadRequestError, CurrentUser, HttpCode, JsonController, Param, Post} from "routing-controllers";
+import {
+  Authorized, BadRequestError, CurrentUser, Get, HttpCode, JsonController, Param,
+  Post
+} from "routing-controllers";
 import User from "../users/entity";
 import {Game, Player} from "./entities";
 import {io} from "../index";
@@ -47,7 +50,7 @@ export default class GameController {
       game,
       user,
       character: 'fighter'
-    })
+    }).save()
 
     io.emit('action', {
       type: 'UPDATE_GAME',
@@ -55,5 +58,19 @@ export default class GameController {
     })
 
     return player
+  }
+
+  @Authorized()
+  @Get('/games')
+  getGames() {
+    return Game.find()
+  }
+
+  @Authorized()
+  @Get('/games/:id([0-9]+)')
+  getGame (
+    @Param('id') id: number
+  ) {
+    return Game.findOneById(id)
   }
 }
