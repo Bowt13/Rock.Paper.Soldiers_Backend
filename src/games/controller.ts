@@ -1,6 +1,7 @@
 import {Authorized, CurrentUser, HttpCode, JsonController, Post} from "routing-controllers";
 import User from "../users/entity";
 import {Game, Player} from "./entities";
+import {io} from "../index";
 
 @JsonController()
 export default class GameController {
@@ -20,6 +21,11 @@ export default class GameController {
 
     const game = await Game.findOneById(entity.id)
 
+    io.emit('action', {
+      type: 'ADD_GAME',
+      payload: game
+    })
+    
     return game
   }
 }
