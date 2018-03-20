@@ -27,7 +27,7 @@ export class Player extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number
 
-  @Column('integer')
+  @Column('integer', {default: 10})
   hp: number
 
   @Column('text')
