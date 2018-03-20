@@ -10,6 +10,7 @@ import {Server} from 'http'
 import * as IO from 'socket.io'
 import * as socketIoJwtAuth from 'socketio-jwt-auth'
 import {secret} from './jwt'
+import GameController from "./games/controller";
 
 const app = new Koa()
 const server = new Server(app.callback())
@@ -20,7 +21,8 @@ useKoaServer(app, {
   cors: true,
   controllers: [
     UserController,
-    LoginController
+    LoginController,
+    GameController
   ],
   authorizationChecker: (action: Action) => {
     const header: string = action.request.headers.authorization
