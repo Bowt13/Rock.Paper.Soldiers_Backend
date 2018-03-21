@@ -6,6 +6,7 @@ import {
 import User from "../users/entity";
 import {Game, Player} from "./entities";
 import {io} from "../index";
+import {calcMoveWinner, calculateWinner} from "./logic";
 
 interface attackType {
   attackType: "melee" | "spell" | "ranged"
@@ -92,20 +93,23 @@ export default class GameController {
     await player.save()
 
     if(player.pendingMove && opponent.pendingMove) {
-      //Calculate if opponent or player wins this move
-      //Subtract damage from loser hp
-      //Set pendingMove for both players to null
-      //Save player entities
-      //Check if a player won
-        //Set game to finished
-        //Set winner to player that won
-        //Save game
-        //Emit finished game
-        //return finished game
+      if (calcMoveWinner(player.pendingMove, opponent.pendingMove) === 'opponent') {
+        player.hp = player.hp - 2
+      }
+      if (calcMoveWinner(player.pendingMove, opponent.pendingMove) === 'player') {
+        opponent.hp = opponent.hp - 2
+      }
+      if (player.hp <= 0 || opponent.hp <= 0) {
+        game.winner = calculateWinner(player, opponent)
+        game.status = 'finished'
+        game.save()
+      }
+
+      const lessUpdatedGame = await Game.findOneById(game.id)
 
       io.emit('action', {
         type: 'UPDATE_GAME',
-        payload: game
+        payload: lessUpdatedGame
       })
 
       player.pendingMove = null
@@ -116,10 +120,12 @@ export default class GameController {
 
       const updatedGame = await Game.findOneById(game.id)
 
-      io.emit('action', {
-        type: 'UPDATE_GAME',
-        payload: updatedGame
-      })
+      setTimeout(_ => {
+        io.emit('action', {
+          type: 'UPDATE_GAME',
+          payload: updatedGame
+        })
+      }, 1000)
 
       return updatedGame
     }
