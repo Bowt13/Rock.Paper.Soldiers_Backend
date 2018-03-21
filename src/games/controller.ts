@@ -124,7 +124,7 @@ export default class GameController {
       return updatedGame
     }
 
-    const updatedGame = Game.findOneById(game.id)
+    const updatedGame = await Game.findOneById(game.id)
 
     io.emit('action', {
       type: 'UPDATE_GAME',
