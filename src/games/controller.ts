@@ -97,14 +97,28 @@ export default class GameController {
       //Subtract damage from loser hp
       //Set pendingMove for both players to null
       //Save player entities
+      //Check if a player won
+        //Set game to finished
+        //Set winner to player that won
+        //Save game
+        //Emit finished game
+        //return finished game
       //Emit new game to the frontend
       //return game
+      
+      io.emit('action', {
+        type: 'UPDATE_GAME',
+        payload: game
+      })
+
       return Game.findOneById(game.id)
     }
-    //set player.pendingMove to update.attackType
-    //save player with pending move
-    //Maybe emit some waiting status.
-    //return game
+
+    io.emit('action', {
+      type: 'UPDATE_GAME',
+      payload: game
+    })
+
     return Game.findOneById(game.id)
   }
 
