@@ -34,7 +34,7 @@ export class Player extends BaseEntity {
   character: Character
 
   @Column('text', {nullable:true})
-  pendingMove: string
+  pendingMove: string | null
 
   @ManyToOne(_ => Game, game => game.players)
   game: Game

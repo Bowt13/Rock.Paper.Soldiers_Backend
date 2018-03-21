@@ -48,6 +48,8 @@ export default class GameController {
     if(!game) throw new BadRequestError('Game does not exist.')
     if(game.status !== 'pending') throw new BadRequestError('Game has already started.')
 
+    if (game.players.filter(p => p.userId === user.id).length > 0) throw new BadRequestError('You are already in this game.')
+
     game.status = 'started'
     await game.save()
 
@@ -103,9 +105,18 @@ export default class GameController {
         //Save game
         //Emit finished game
         //return finished game
-      //Emit new game to the frontend
-      //return game
-      
+
+      io.emit('action', {
+        type: 'UPDATE_GAME',
+        payload: game
+      })
+
+      player.pendingMove = null
+      opponent.pendingMove = null
+
+      await player.save()
+      await opponent.save()
+
       io.emit('action', {
         type: 'UPDATE_GAME',
         payload: game
