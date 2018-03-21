@@ -117,20 +117,24 @@ export default class GameController {
       await player.save()
       await opponent.save()
 
+      const updatedGame = Game.findOneById(game.id)
+
       io.emit('action', {
         type: 'UPDATE_GAME',
-        payload: game
+        payload: updatedGame
       })
 
-      return Game.findOneById(game.id)
+      return updatedGame
     }
+
+    const updatedGame = Game.findOneById(game.id)
 
     io.emit('action', {
       type: 'UPDATE_GAME',
-      payload: game
+      payload: updatedGame
     })
 
-    return Game.findOneById(game.id)
+    return updatedGame
   }
 
   @Authorized()
