@@ -77,7 +77,6 @@ export default class GameController {
 
     const player = await Player.findOne({ user, game })
 
-
     if(!player) throw new ForbiddenError('You are not in this game.')
     if(game.status !== 'started') throw new BadRequestError('The game did not start yet or is already finished')
     if(player.pendingMove) throw new BadRequestError('You already made a move, wait for the opponent')
@@ -87,6 +86,12 @@ export default class GameController {
 
     if(!opponent) throw new BadRequestError("You somehow don't have an opponent and still got to this point..")
 
+    console.log(opponent)
+
+    player.pendingMove = update.attackType
+
+    await player.save()
+
     if(player.pendingMove && opponent.pendingMove) {
       //Calculate if opponent or player wins this move
       //Subtract damage from loser hp
@@ -94,11 +99,13 @@ export default class GameController {
       //Save player entities
       //Emit new game to the frontend
       //return game
+      return Game.findOneById(game.id)
     }
     //set player.pendingMove to update.attackType
     //save player with pending move
     //Maybe emit some waiting status.
     //return game
+    return Game.findOneById(game.id)
   }
 
   @Authorized()
