@@ -83,12 +83,9 @@ export default class GameController {
     if(game.status !== 'started') throw new BadRequestError('The game did not start yet or is already finished')
     if(player.pendingMove) throw new BadRequestError('You already made a move, wait for the opponent')
 
-    const opponentId = game.players.filter(p => p.userId !== user.id)[0].userId
-    const opponent = await Player.findOne({ userId: opponentId })
+    const opponent = game.players.find(p => p.userId !== user.id)
 
     if(!opponent) throw new BadRequestError("You somehow don't have an opponent and still got to this point..")
-
-    console.log(opponent)
 
     player.pendingMove = update.attackType
 
@@ -117,7 +114,7 @@ export default class GameController {
       await player.save()
       await opponent.save()
 
-      const updatedGame = Game.findOneById(game.id)
+      const updatedGame = await Game.findOneById(game.id)
 
       io.emit('action', {
         type: 'UPDATE_GAME',
