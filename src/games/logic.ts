@@ -3,24 +3,21 @@ import {Player} from "./entities";
 
 export type Move = "melee" | "spell" | "ranged"
 
-export interface AttackType {
-  attackType: Move
-}
-
-type MoveResult = "player" | "opponent" | "stalemate"
+export type MoveResult = "player" | "opponent" | "stalemate"
 
 @ValidatorConstraint()
 export class IsValidAttack implements ValidatorConstraintInterface {
 
-  validate(attack: AttackType) {
-    return attack.attackType === "melee" ||
-      attack.attackType === "spell" ||
-      attack.attackType === "ranged"
+  validate(attack: Move) {
+    return attack === "melee" ||
+      attack === "spell" ||
+      attack === "ranged"
   }
 
 }
 
 export const calcMoveWinner = (playerMove: Move, opponentMove: Move): MoveResult => {
+
   if(playerMove === 'melee') {
     if (opponentMove === 'spell') return 'opponent'
     if (opponentMove === 'ranged') return 'player'
@@ -34,6 +31,8 @@ export const calcMoveWinner = (playerMove: Move, opponentMove: Move): MoveResult
     if (opponentMove === 'spell') return 'player'
   }
   return 'stalemate'
+
+
 }
 
 export const calculateWinner = (player: Player, opponent: Player): string | undefined => {
