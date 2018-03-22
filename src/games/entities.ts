@@ -15,7 +15,7 @@ export class Game extends BaseEntity {
   status: Status
 
   @Column('text', {nullable:true})
-  winner: string
+  winner: number
 
   @OneToMany(_ => Player, player => player.game, {eager:true})
   players: Player[]

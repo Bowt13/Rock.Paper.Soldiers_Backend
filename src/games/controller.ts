@@ -115,7 +115,7 @@ export default class GameController {
         opponent.hp = opponent.hp - 2
       }
 
-      const gameWinner: string | undefined = calculateWinner(player, opponent)
+      const gameWinner: number | undefined = calculateWinner(player, opponent)
 
       if (gameWinner) {
         game.winner = gameWinner
@@ -143,7 +143,7 @@ export default class GameController {
           type: 'UPDATE_GAME',
           payload: updatedGame
         })
-      }, 1000)
+      }, 1200)
 
       return updatedGame
     }

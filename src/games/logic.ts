@@ -35,7 +35,7 @@ export const calcMoveWinner = (playerMove: Move, opponentMove: Move): MoveResult
 
 }
 
-export const calculateWinner = (player: Player, opponent: Player): string | undefined => {
-  if (player.hp <= 0) return opponent.character
-  if (opponent.hp <= 0) return player.character
+export const calculateWinner = (player: Player, opponent: Player): number | undefined => {
+  if (player.hp <= 0) return opponent.userId
+  if (opponent.hp <= 0) return player.userId
 }
