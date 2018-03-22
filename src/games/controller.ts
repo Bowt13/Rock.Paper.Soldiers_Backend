@@ -3,13 +3,19 @@ import {
   Patch,
   Post
 } from "routing-controllers";
+import {Validate} from 'class-validator'
 import User from "../users/entity";
 import {Game, Player} from "./entities";
 import {io} from "../index";
-import {calcMoveWinner, calculateWinner} from "./logic";
+import {calcMoveWinner, calculateWinner, IsValidAttack, Move, MoveResult} from "./logic";
 
-interface attackType {
-  attackType: "melee" | "spell" | "ranged"
+class AttackType {
+
+  @Validate(IsValidAttack, {
+    message: 'Not a valid attack type.'
+  })
+  attackType: Move
+
 }
 
 @JsonController()
@@ -73,7 +79,7 @@ export default class GameController {
   async updateGame(
     @CurrentUser() user: User,
     @Param('id') gameId: number,
-    @Body() update: attackType
+    @Body() update: AttackType
   ) {
     const game = await Game.findOneById(gameId)
     if(!game) throw new NotFoundError('Game not found.')
@@ -93,16 +99,28 @@ export default class GameController {
     await player.save()
 
     if(player.pendingMove && opponent.pendingMove) {
-      if (calcMoveWinner(player.pendingMove, opponent.pendingMove) === 'opponent') {
+      player.previousMove = player.pendingMove
+      opponent.previousMove = opponent.pendingMove
+
+      await player.save()
+      await opponent.save()
+
+      const moveResult: MoveResult = calcMoveWinner(player.pendingMove, opponent.pendingMove)
+
+      if (moveResult === 'opponent') {
         player.hp = player.hp - 2
       }
-      if (calcMoveWinner(player.pendingMove, opponent.pendingMove) === 'player') {
+
+      if (moveResult === 'player') {
         opponent.hp = opponent.hp - 2
       }
-      if (player.hp <= 0 || opponent.hp <= 0) {
-        game.winner = calculateWinner(player, opponent)
+
+      const gameWinner: string | undefined = calculateWinner(player, opponent)
+
+      if (gameWinner) {
+        game.winner = gameWinner
         game.status = 'finished'
-        game.save()
+        await game.save()
       }
 
       const lessUpdatedGame = await Game.findOneById(game.id)
