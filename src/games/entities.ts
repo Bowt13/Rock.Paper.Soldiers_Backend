@@ -1,5 +1,6 @@
 import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId} from "typeorm";
 import User from "../users/entity";
+import {Move} from "./logic";
 
 type Character = 'fighter' | 'mage' | 'archer'
 type Status = 'pending' | 'started' | 'finished'
@@ -34,7 +35,7 @@ export class Player extends BaseEntity {
   character: Character
 
   @Column('text', {nullable:true})
-  pendingMove: string | null
+  pendingMove: Move | null
 
   @ManyToOne(_ => Game, game => game.players)
   game: Game
